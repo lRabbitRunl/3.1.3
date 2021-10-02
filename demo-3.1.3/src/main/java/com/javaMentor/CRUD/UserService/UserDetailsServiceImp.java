@@ -23,7 +23,6 @@ public class UserDetailsServiceImp implements UserDetailsService {
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         PasswordEncoder pe = new BCryptPasswordEncoder();
         String pas = pe.encode("ADMIN");
-        System.out.println(pas);
         if (login.equals("ADMIN")) {
             User user = new User("ADMIN", pas, "adm", "adm");
             user.setRole(new Role(2, "ADMIN"));

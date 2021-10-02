@@ -3,6 +3,7 @@ package com.javaMentor.CRUD.UserService;
 
 import com.javaMentor.CRUD.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.javaMentor.CRUD.model.User;
 
@@ -41,13 +42,17 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    @Override
-    public void updateUser(User user) {
-        if (user.getPassword().equals("")) {
-            String pass = getUser(user.getId()).getPassword();
+
+
+    public void setPas(User user) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+    }
+
+    public void returnPas(User user){
+        String pass = getUser(user.getId()).getPassword();
+        if (user.getPassword().isEmpty()) {
             user.setPassword(pass);
         }
-        userRepository.save(user);
     }
 
 

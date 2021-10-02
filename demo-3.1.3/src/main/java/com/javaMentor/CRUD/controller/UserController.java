@@ -1,6 +1,7 @@
 package com.javaMentor.CRUD.controller;
 
 
+import com.javaMentor.CRUD.UserService.RoleService;
 import com.javaMentor.CRUD.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -19,19 +20,17 @@ import java.util.Set;
 @Controller
 @RequestMapping("/")
 public class UserController {
-    private final UserService userService;
-    private final RoleRepository roleRepository;
-    private final Set<Role> allRoles;
 
-    public UserController(@Qualifier("userService") UserService userService, RoleRepository roleRepository) {
+
+    private final UserService userService;
+    private final RoleService roleService;
+
+    public UserController(UserService userService, RoleService roleService) {
         this.userService = userService;
-        this.roleRepository = roleRepository;
-        if (roleRepository.findAll().isEmpty()) {
-            roleRepository.save(new Role("USER"));
-            roleRepository.save(new Role("ADMIN"));
-        }
-        this.allRoles = new HashSet<>(roleRepository.findAll());
+        this.roleService = roleService;
     }
+
+
 
     @GetMapping
     public String startPage(Principal user, ModelMap modelMap) {
@@ -47,7 +46,7 @@ public class UserController {
         model.addAttribute("userUp", userUp);
         model.addAttribute("currentUser", userBd);
         model.addAttribute("users", list);
-        model.addAttribute("allRoles", allRoles);
+        model.addAttribute("allRoles", roleService.getAllRoles());
         return "admin";
     }
 
@@ -55,22 +54,15 @@ public class UserController {
     public String updateUserForm(@PathVariable("id") int id, ModelMap model) {
         User user = userService.getUser(id);
         model.addAttribute("user", user);
-        model.addAttribute("allRoles", allRoles);
+        model.addAttribute("allRoles", roleService.getAllRoles());
         return "updateUser";
     }
 
     @PostMapping("/updateUser")
     public String updateUser(@ModelAttribute User user) {
-        Set<Role> temp = new HashSet<>();
-        user.getRoles().forEach(role -> temp.add(roleRepository.findById(role.getId()).get()));
-        user.setRoles(temp);
-        String pass = userService.getUser(user.getId()).getPassword();
-        if (user.getPassword().equals("")) {
-            user.setPassword(pass);
-        }
-        System.out.println(pass);
-        System.out.println(user.getPassword());
-        userService.updateUser(user);
+        roleService.setRoles(user);
+        userService.returnPas(user);
+        userService.saveUser(user);
         return "redirect:/admin";
     }
 
@@ -83,7 +75,7 @@ public class UserController {
     @RolesAllowed(value = "ADMIN")
     @GetMapping("/addUser")
     public String addUserForm(@ModelAttribute User user, ModelMap model) {
-        model.addAttribute("allRoles", allRoles);
+        model.addAttribute("allRoles", roleService.getAllRoles());
         model.addAttribute("user", user);
         return "addUser";
     }
@@ -91,12 +83,8 @@ public class UserController {
     @RolesAllowed(value = "ADMIN")
     @PostMapping("/addUser")
     public String addUser(User user) {
-        Set<Role> temp = new HashSet<>();
-        if (user.getRoles().isEmpty()) {
-            user.setRole(new Role(1));
-        }
-        user.getRoles().forEach(role -> temp.add(roleRepository.findById(role.getId()).get()));
-        user.setRoles(temp);
+        roleService.setdefaultRoleIfNotSelected(user);
+        roleService.setRoles(user);
         userService.saveUser(user);
         return "redirect:/admin";
     }
