@@ -13,5 +13,4 @@ public interface RoleService {
 
     void setRoles(User user);
 
-    void setdefaultRoleIfNotSelected(User user);
 }

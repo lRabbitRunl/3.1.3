@@ -61,8 +61,7 @@ public class UserController {
     @PostMapping("/updateUser")
     public String updateUser(@ModelAttribute User user) {
         roleService.setRoles(user);
-        userService.returnPas(user);
-        userService.saveUser(user);
+        userService.updateUser(user);
         return "redirect:/admin";
     }
 
@@ -83,7 +82,6 @@ public class UserController {
     @RolesAllowed(value = "ADMIN")
     @PostMapping("/addUser")
     public String addUser(User user) {
-        roleService.setdefaultRoleIfNotSelected(user);
         roleService.setRoles(user);
         userService.saveUser(user);
         return "redirect:/admin";

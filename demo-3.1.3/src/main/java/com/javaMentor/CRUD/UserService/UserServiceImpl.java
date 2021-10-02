@@ -21,6 +21,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User updateUser(User user) {
+        setPas(user);
+        return saveUser(user);
+    }
+
+    @Override
     public void deleteUser(int id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
@@ -44,16 +50,11 @@ public class UserServiceImpl implements UserService {
 
 
 
-    public void setPas(User user) {
+    private void setPas(User user) {
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
     }
 
-    public void returnPas(User user){
-        String pass = getUser(user.getId()).getPassword();
-        if (user.getPassword().isEmpty()) {
-            user.setPassword(pass);
-        }
-    }
+
 
 
 }

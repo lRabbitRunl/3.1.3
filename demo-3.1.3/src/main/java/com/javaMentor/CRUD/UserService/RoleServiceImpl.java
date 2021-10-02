@@ -32,14 +32,18 @@ public class RoleServiceImpl implements RoleService{
 
 
     public void setRoles(User user){
+
+        setDefaultRoleIfNotSelected(user);
         Set<Role> temp = new HashSet<>();
+
+
         user.getRoles().forEach(role -> temp.add(roleRepository.findById(role.getId()).get()));
         user.setRoles(temp);
     }
 
-    public void setdefaultRoleIfNotSelected(User user){
+    private void setDefaultRoleIfNotSelected(User user){
         if (user.getRoles().isEmpty()) {
-            user.setRole(new Role(1));
+            user.setRole(roleRepository.findById(1).get());
         }
     }
 }

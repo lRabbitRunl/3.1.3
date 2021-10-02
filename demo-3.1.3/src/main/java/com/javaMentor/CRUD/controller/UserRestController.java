@@ -3,6 +3,7 @@ package com.javaMentor.CRUD.controller;
 import com.javaMentor.CRUD.UserService.RoleService;
 import com.javaMentor.CRUD.UserService.UserService;
 import com.javaMentor.CRUD.model.User;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.javaMentor.CRUD.model.Role;
 
@@ -26,32 +27,32 @@ public class UserRestController {
 
 
     @GetMapping("/roles")
-    public List<Role> getAllRoles() {
-        return roleService.getAllRoles();
+
+    public ResponseEntity<List<Role>> getAllRoles() {
+        return ResponseEntity.ok(roleService.getAllRoles());
+
     }
 
     @PostMapping("/users")
-    public User addNewUser(@RequestBody User user) {
-        userService.setPas(user);
-        return userService.saveUser(user);
+    public ResponseEntity<User> addNewUser(@RequestBody User user) {
+        roleService.setRoles(user);
+        return ResponseEntity.ok(userService.updateUser(user));
     }
 
     @GetMapping("/user")
-    public User getUser(Principal user) {
-        return userService.findByLogin(user.getName());
+    public ResponseEntity<User> getUser(Principal user) {
+        return ResponseEntity.ok(userService.findByLogin(user.getName()));
     }
 
     @GetMapping("/users")
-    public List<User> getUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<User>> getUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
 
     }
 
     @PutMapping("/users")
     public void editUser(@RequestBody User user) {
-        userService.setPas(user);
-        userService.returnPas(user);
-        userService.saveUser(user);
+        userService.updateUser(user);
     }
 
     @DeleteMapping("/users/{id}")

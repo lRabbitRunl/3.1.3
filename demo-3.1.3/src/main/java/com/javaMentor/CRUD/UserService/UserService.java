@@ -11,6 +11,5 @@ public interface UserService {
     void deleteUser(int id);
     List<User> getAllUsers();
     User findByLogin(String login);
-    void returnPas(User user);
-    void setPas(User user);
+    User updateUser(User user);
 }
